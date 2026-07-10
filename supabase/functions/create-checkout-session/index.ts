@@ -46,7 +46,7 @@ Deno.serve(async (req) => {
     const user = userData.user;
 
     const { origin } = await req.json().catch(() => ({ origin: '' }));
-    const appOrigin: string = origin || req.headers.get('origin') || '';
+    const appOrigin: string = Deno.env.get('NEXT_PUBLIC_APP_URL') || origin || req.headers.get('origin') || '';
 
     // Reuse or create Stripe customer
     const { data: profile } = await supabase.from('profiles').select('stripe_customer_id').eq('user_id', user.id).single();
