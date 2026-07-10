@@ -2,7 +2,10 @@ import { useState, useEffect, createContext, useContext, ReactNode, useCallback 
 import { User, Session } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 
-const ADMIN_EMAIL = "investingforfuture09121110@gmail.com";
+const ADMIN_EMAILS = [
+  "investingforfuture09121110@gmail.com",
+  "scarfinance.trading@gmail.com",
+];
 
 interface AuthContextType {
   user: User | null;
@@ -27,20 +30,24 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [rawStatus, setRawStatus] = useState<string | null>(null);
   const [profileLoading, setProfileLoading] = useState(true);
 
-  const isAdmin = !!user?.email && user.email.toLowerCase() === ADMIN_EMAIL;
-  const hasAccess = isAdmin || rawStatus === "active";
+  const [periodEnd, setPeriodEnd] = useState<string | null>(null);
+  const isAdmin = !!user?.email && ADMIN_EMAILS.includes(user.email.toLowerCase());
+  const subscriptionActive =
+    rawStatus === "active" && !!periodEnd && new Date(periodEnd).getTime() > Date.now();
+  const hasAccess = isAdmin || subscriptionActive;
   const profileStatus = hasAccess ? "approved" : rawStatus;
 
   const fetchProfile = useCallback(async (userId: string) => {
     setProfileLoading(true);
     const { data } = await supabase
       .from("profiles")
-      .select("status, admin_notified, email, stripe_customer_id")
+      .select("status, admin_notified, email, stripe_customer_id, current_period_end")
       .eq("user_id", userId)
       .single();
 
     if (data) {
       setRawStatus(data.status);
+      setPeriodEnd((data as any).current_period_end ?? null);
 
       // Auto-sync subscription status when there's a stripe customer but status not active
       if (data.status !== "active" && (data as any).stripe_customer_id) {
@@ -64,7 +71,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         setUser(session?.user ?? null);
         setLoading(false);
         if (session?.user) setTimeout(() => fetchProfile(session.user.id), 0);
-        else { setRawStatus(null); setProfileLoading(false); }
+        else { setRawStatus(null); setPeriodEnd(null); setProfileLoading(false); }
       }
     );
 
@@ -93,6 +100,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const signOut = async () => {
     await supabase.auth.signOut();
     setRawStatus(null);
+    setPeriodEnd(null);
   };
 
   return (

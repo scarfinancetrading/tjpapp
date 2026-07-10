@@ -71,6 +71,11 @@ Deno.serve(async (req) => {
     const patch: Record<string, unknown> = { status: newStatus };
     if (customerId) patch.stripe_customer_id = customerId;
     if (subscriptionId) patch.stripe_subscription_id = subscriptionId;
+    if (newStatus === 'active') {
+      const end = new Date();
+      end.setUTCDate(end.getUTCDate() + 30);
+      patch.current_period_end = end.toISOString();
+    }
     await supabase.from('profiles').update(patch).eq('user_id', user.id);
 
     return new Response(JSON.stringify({ status: newStatus }), {
