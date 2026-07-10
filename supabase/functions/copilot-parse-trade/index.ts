@@ -1,8 +1,8 @@
 import { corsHeaders } from 'npm:@supabase/supabase-js@2/cors';
 
-const GEMINI_API_KEY = Deno.env.get('GEMINI_API_KEY');
-const MODEL = 'gemini-2.0-flash';
-const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent`;
+const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
+const AI_URL = 'https://ai.gateway.lovable.dev/v1/chat/completions';
+const MODEL = 'google/gemini-2.5-flash';
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -10,9 +10,8 @@ Deno.serve(async (req) => {
   }
 
   try {
-    // Acepta cualquier formato de clave de Google AI Studio ("AIza..." o "AQ....")
-    if (!GEMINI_API_KEY || GEMINI_API_KEY.trim().length < 10) {
-      return new Response(JSON.stringify({ error: 'GEMINI_API_KEY no configurada' }), {
+    if (!LOVABLE_API_KEY) {
+      return new Response(JSON.stringify({ error: 'LOVABLE_API_KEY no configurada' }), {
         status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
@@ -62,35 +61,31 @@ REGLAS ESTRICTAS:
 - Si un campo no se menciona ni se puede deducir con certeza: "". NO INVENTES DATOS.
 - Devuelve SOLO el JSON.`;
 
-    const geminiResp = await fetch(GEMINI_URL, {
+    const aiResp = await fetch(AI_URL, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'x-goog-api-key': GEMINI_API_KEY.trim(),
+        Authorization: `Bearer ${LOVABLE_API_KEY}`,
       },
       body: JSON.stringify({
-        contents: [
-          {
-            role: 'user',
-            parts: [{ text: systemPrompt }, { text: `Texto del usuario:\n"""${text.trim()}"""` }],
-          },
+        model: MODEL,
+        messages: [
+          { role: 'system', content: systemPrompt },
+          { role: 'user', content: `Texto del usuario:\n"""${text.trim()}"""` },
         ],
-        generationConfig: {
-          temperature: 0,
-          responseMimeType: 'application/json',
-        },
+        response_format: { type: 'json_object' },
       }),
     });
 
-    if (!geminiResp.ok) {
-      const errText = await geminiResp.text();
-      console.error('Gemini error', geminiResp.status, errText);
-      const status = geminiResp.status === 429 ? 429 : geminiResp.status === 401 || geminiResp.status === 403 ? 401 : 500;
+    if (!aiResp.ok) {
+      const errText = await aiResp.text();
+      console.error('AI Gateway error', aiResp.status, errText);
+      const status = aiResp.status === 429 ? 429 : aiResp.status === 402 ? 402 : 500;
       const msg =
         status === 429
-          ? 'Límite de uso de IA alcanzado. Intenta más tarde.'
-          : status === 401
-            ? 'Credencial de IA inválida.'
+          ? 'Límite de uso de IA alcanzado. Intenta de nuevo en unos segundos.'
+          : status === 402
+            ? 'Créditos de IA agotados. Añade créditos en tu workspace.'
             : 'Error al procesar el texto';
       return new Response(JSON.stringify({ error: msg, details: errText }), {
         status,
@@ -98,8 +93,8 @@ REGLAS ESTRICTAS:
       });
     }
 
-    const geminiJson = await geminiResp.json();
-    const content: string = geminiJson?.candidates?.[0]?.content?.parts?.[0]?.text ?? '{}';
+    const aiJson = await aiResp.json();
+    const content: string = aiJson?.choices?.[0]?.message?.content ?? '{}';
 
     let parsed: Record<string, unknown> = {};
     try {
