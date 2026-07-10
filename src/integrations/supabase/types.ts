@@ -48,6 +48,7 @@ export type Database = {
         Row: {
           admin_notified: boolean
           created_at: string
+          current_period_end: string | null
           display_name: string | null
           email: string | null
           id: string
@@ -60,6 +61,7 @@ export type Database = {
         Insert: {
           admin_notified?: boolean
           created_at?: string
+          current_period_end?: string | null
           display_name?: string | null
           email?: string | null
           id?: string
@@ -72,6 +74,7 @@ export type Database = {
         Update: {
           admin_notified?: boolean
           created_at?: string
+          current_period_end?: string | null
           display_name?: string | null
           email?: string | null
           id?: string
