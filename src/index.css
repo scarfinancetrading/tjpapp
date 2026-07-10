@@ -1,0 +1,71 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 220 15% 8%;
+    --foreground: 40 10% 92%;
+
+    --card: 220 14% 11%;
+    --card-foreground: 40 10% 92%;
+
+    --popover: 220 14% 13%;
+    --popover-foreground: 40 10% 92%;
+
+    --primary: 43 96% 56%;
+    --primary-foreground: 220 15% 8%;
+
+    --secondary: 220 12% 16%;
+    --secondary-foreground: 40 10% 85%;
+
+    --muted: 220 12% 14%;
+    --muted-foreground: 220 10% 55%;
+
+    --accent: 43 80% 48%;
+    --accent-foreground: 220 15% 8%;
+
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 220 12% 18%;
+    --input: 220 12% 18%;
+    --ring: 43 96% 56%;
+
+    --radius: 0.5rem;
+
+    --sidebar-background: 220 14% 10%;
+    --sidebar-foreground: 40 10% 92%;
+    --sidebar-primary: 43 96% 56%;
+    --sidebar-primary-foreground: 220 15% 8%;
+    --sidebar-accent: 220 12% 16%;
+    --sidebar-accent-foreground: 40 10% 92%;
+    --sidebar-border: 220 12% 18%;
+    --sidebar-ring: 43 96% 56%;
+
+    --gold: 43 96% 56%;
+    --gold-hover: 43 96% 48%;
+    --gold-muted: 43 40% 30%;
+    --surface: 220 14% 13%;
+    --surface-hover: 220 14% 16%;
+    --success: 142 71% 45%;
+    --loss: 0 72% 51%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+
+  h1, h2, h3, h4 {
+    font-family: 'Space Grotesk', 'Inter', sans-serif;
+  }
+}
