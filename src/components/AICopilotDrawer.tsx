@@ -399,7 +399,7 @@ const AICopilotDrawer = ({ onAddTrade }: AICopilotDrawerProps) => {
                     className="flex-1 bg-primary text-primary-foreground hover:bg-gold-hover font-semibold"
                   >
                     {saving ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Check className="h-4 w-4 mr-2" />}
-                    Confirmar y Añadir Operación
+                    Confirmar
                   </Button>
                   <Button variant="outline" onClick={cancelPreview} disabled={saving}>
                     Cancelar
