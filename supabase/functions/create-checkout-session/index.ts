@@ -60,6 +60,7 @@ Deno.serve(async (req) => {
     const session = await stripe('/checkout/sessions', {
       mode: 'subscription',
       customer: customerId!,
+      'payment_method_types[0]': 'card',
       'line_items[0][price]': STRIPE_PRICE_ID,
       'line_items[0][quantity]': '1',
       success_url: `${appOrigin}/app?checkout=success&session_id={CHECKOUT_SESSION_ID}`,
