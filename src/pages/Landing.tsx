@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import {
-  BookOpen, Calculator, CalendarDays, Check, LineChart, ShieldCheck, Sparkles, ArrowRight,
+  BookOpen, Calculator, CalendarDays, Check, LineChart, ShieldCheck, Sparkles, ArrowRight, LogOut,
 } from "lucide-react";
 
 const features = [
@@ -38,9 +38,16 @@ const bullets = [
 
 const Landing = () => {
   const navigate = useNavigate();
-  const { user, hasAccess } = useAuth();
+  const { user, hasAccess, signOut } = useAuth();
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
+
+  const handleChangeAccount = async () => {
+    setLoading(true);
+    await signOut();
+    setLoading(false);
+    navigate("/auth");
+  };
 
   const handleSubscribe = async () => {
     if (!user) {
@@ -82,9 +89,15 @@ const Landing = () => {
             {hasAccess ? (
               <Button asChild size="sm"><Link to="/app">Ir a la app <ArrowRight className="h-4 w-4 ml-1" /></Link></Button>
             ) : user ? (
-              <Button size="sm" onClick={handleSubscribe} disabled={loading}>
-                {loading ? "Cargando…" : "Suscribirse"}
-              </Button>
+              <>
+                <Button variant="ghost" size="sm" onClick={handleChangeAccount} disabled={loading}>
+                  <LogOut className="h-4 w-4 sm:mr-1" />
+                  <span className="hidden sm:inline">Cambiar cuenta</span>
+                </Button>
+                <Button size="sm" onClick={handleSubscribe} disabled={loading}>
+                  {loading ? "Cargando…" : "Suscribirse"}
+                </Button>
+              </>
             ) : (
               <>
                 <Button asChild variant="ghost" size="sm"><Link to="/auth">Iniciar sesión</Link></Button>
@@ -117,8 +130,18 @@ const Landing = () => {
                 <Link to="/auth">Iniciar sesión</Link>
               </Button>
             )}
+            {user && !hasAccess && (
+              <Button size="lg" variant="outline" onClick={handleChangeAccount} disabled={loading} className="text-base px-8">
+                Cambiar cuenta
+              </Button>
+            )}
             <span className="text-xs text-muted-foreground">Cancela cuando quieras · Pago seguro con Stripe</span>
           </div>
+          {user && !hasAccess && (
+            <p className="mt-4 text-xs text-muted-foreground">
+              Sesión activa: <span className="text-foreground">{user.email}</span>. Si este no es tu email correcto, cambia de cuenta antes de suscribirte.
+            </p>
+          )}
         </section>
 
         {/* FEATURES */}
@@ -166,6 +189,11 @@ const Landing = () => {
               <Button size="lg" onClick={handleSubscribe} disabled={loading} className="w-full mt-8 text-base">
                 {loading ? "Cargando…" : "Suscribirse ahora"}
               </Button>
+              {user && !hasAccess && (
+                <Button variant="outline" onClick={handleChangeAccount} disabled={loading} className="w-full mt-3 text-base">
+                  Cerrar sesión y usar otro email
+                </Button>
+              )}
               <p className="mt-4 text-xs text-muted-foreground flex items-center justify-center gap-1">
                 <ShieldCheck className="h-3 w-3" /> Pago seguro procesado por Stripe
               </p>
