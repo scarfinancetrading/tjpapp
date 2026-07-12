@@ -21,15 +21,24 @@ const Auth = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [showForgot, setShowForgot] = useState(false);
   const [forgotEmail, setForgotEmail] = useState("");
-  const { signIn, signUp, user, loading, profileStatus, profileLoading } = useAuth();
+  const { signIn, signUp, signOut, user, loading, hasAccess } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
 
   useEffect(() => {
-    if (!loading && user) {
+    if (!loading && user && hasAccess) {
       navigate("/app");
     }
-  }, [user, loading, navigate]);
+  }, [user, loading, hasAccess, navigate]);
+
+  const handleChangeAccount = async () => {
+    setIsLoading(true);
+    await signOut();
+    setIsLoading(false);
+    setEmail("");
+    setPassword("");
+    setConfirmPassword("");
+  };
 
   const validateInputs = (isSignUp: boolean) => {
     try {
@@ -166,6 +175,22 @@ const Auth = () => {
           </CardDescription>
         </CardHeader>
         <CardContent>
+          {user && !hasAccess && (
+            <div className="mb-4 rounded-md border border-border bg-secondary/40 p-3 text-sm text-muted-foreground">
+              <p>
+                Sesión activa con <span className="text-foreground font-medium">{user.email}</span>.
+              </p>
+              <Button
+                type="button"
+                variant="outline"
+                className="mt-3 w-full"
+                onClick={handleChangeAccount}
+                disabled={isLoading}
+              >
+                {isLoading ? "Cerrando sesión..." : "Cerrar sesión y usar otro email"}
+              </Button>
+            </div>
+          )}
           <Tabs defaultValue="login" className="w-full">
             <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="login">Iniciar Sesión</TabsTrigger>
