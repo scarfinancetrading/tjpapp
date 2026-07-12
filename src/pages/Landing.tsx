@@ -112,6 +112,11 @@ const Landing = () => {
             <Button size="lg" onClick={handleSubscribe} disabled={loading} className="text-base px-8">
               {loading ? "Cargando…" : "Suscribirse por $29/mes"}
             </Button>
+            {!user && (
+              <Button asChild size="lg" variant="outline" className="text-base px-8">
+                <Link to="/auth">Iniciar sesión</Link>
+              </Button>
+            )}
             <span className="text-xs text-muted-foreground">Cancela cuando quieras · Pago seguro con Stripe</span>
           </div>
         </section>
