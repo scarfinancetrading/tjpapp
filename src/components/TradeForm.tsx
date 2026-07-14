@@ -35,6 +35,8 @@ interface TradeFormProps {
 const TradeForm = ({ onAddTrade, accountSize }: TradeFormProps) => {
   const STORAGE_KEY = "tradeFormDraft";
   const { user } = useAuth();
+  const { rules: planRules, plan: activePlan } = useTradingPlan();
+  const [customOverrides, setCustomOverrides] = useState<Record<string, boolean>>({});
 
   const loadDraft = () => {
     try {
