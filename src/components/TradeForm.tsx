@@ -526,6 +526,17 @@ const TradeForm = ({ onAddTrade, accountSize }: TradeFormProps) => {
         </div>
       </div>
 
+      <CompliancePanel
+        plan={activePlan ? planRules : null}
+        tradeData={{ par, sesion, orden, riskReward, riesgo }}
+        customOverrides={customOverrides}
+        onToggleCustomRule={(id, v) =>
+          setCustomOverrides((prev) => ({ ...prev, [id]: v }))
+        }
+      />
+
+
+
       <Button
         type="submit"
         className="w-full sm:w-auto bg-primary text-primary-foreground hover:bg-gold-hover font-semibold px-8 py-2.5 text-sm"
