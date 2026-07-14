@@ -127,6 +127,7 @@ const TradeForm = ({ onAddTrade, accountSize }: TradeFormProps) => {
     setImageFile(null);
     setImagePreview(null);
     setImageSummary(null);
+    setCustomOverrides({});
     if (fileInputRef.current) fileInputRef.current.value = "";
     localStorage.removeItem(STORAGE_KEY);
   };
