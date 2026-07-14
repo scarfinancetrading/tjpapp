@@ -23,6 +23,9 @@ import { Trade, TradeImageSummary } from "@/types/trade";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import CompliancePanel from "@/components/CompliancePanel";
+import { useTradingPlan } from "@/hooks/useTradingPlan";
+import { evaluateTradeCompliance } from "@/utils/complianceEngine";
 
 interface TradeFormProps {
   onAddTrade: (trade: Trade) => void;
