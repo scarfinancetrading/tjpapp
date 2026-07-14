@@ -23,6 +23,9 @@ import { Trade, TradeImageSummary } from "@/types/trade";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import CompliancePanel from "@/components/CompliancePanel";
+import { useTradingPlan } from "@/hooks/useTradingPlan";
+import { evaluateTradeCompliance } from "@/utils/complianceEngine";
 
 interface TradeFormProps {
   onAddTrade: (trade: Trade) => void;
@@ -32,6 +35,8 @@ interface TradeFormProps {
 const TradeForm = ({ onAddTrade, accountSize }: TradeFormProps) => {
   const STORAGE_KEY = "tradeFormDraft";
   const { user } = useAuth();
+  const { rules: planRules, plan: activePlan } = useTradingPlan();
+  const [customOverrides, setCustomOverrides] = useState<Record<string, boolean>>({});
 
   const loadDraft = () => {
     try {
@@ -122,6 +127,7 @@ const TradeForm = ({ onAddTrade, accountSize }: TradeFormProps) => {
     setImageFile(null);
     setImagePreview(null);
     setImageSummary(null);
+    setCustomOverrides({});
     if (fileInputRef.current) fileInputRef.current.value = "";
     localStorage.removeItem(STORAGE_KEY);
   };
@@ -234,6 +240,22 @@ const TradeForm = ({ onAddTrade, accountSize }: TradeFormProps) => {
       uploadedPath = path;
     }
 
+    // Evaluate compliance without breaking submission
+    let complianceData = null;
+    try {
+      if (activePlan) {
+        complianceData = evaluateTradeCompliance(
+          {
+            par, sesion, orden, riskReward, riesgo,
+            custom_rule_overrides: customOverrides,
+          },
+          planRules
+        );
+      }
+    } catch (err) {
+      console.error("Compliance evaluation failed:", err);
+    }
+
     const trade: Trade = {
       id: crypto.randomUUID(),
       fecha: fecha ? format(fecha, "M/d/yyyy") : "",
@@ -251,6 +273,7 @@ const TradeForm = ({ onAddTrade, accountSize }: TradeFormProps) => {
       imageBeforePath: uploadedPath,
       imageAfterPath: null,
       imageSummary: imageSummary,
+      complianceData,
     };
     onAddTrade(trade);
     resetForm();
@@ -502,6 +525,17 @@ const TradeForm = ({ onAddTrade, accountSize }: TradeFormProps) => {
           </Select>
         </div>
       </div>
+
+      <CompliancePanel
+        plan={activePlan ? planRules : null}
+        tradeData={{ par, sesion, orden, riskReward, riesgo }}
+        customOverrides={customOverrides}
+        onToggleCustomRule={(id, v) =>
+          setCustomOverrides((prev) => ({ ...prev, [id]: v }))
+        }
+      />
+
+
 
       <Button
         type="submit"

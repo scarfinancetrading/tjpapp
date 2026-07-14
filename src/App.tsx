@@ -15,6 +15,8 @@ import AdminPanel from "./pages/AdminPanel";
 import ResetPassword from "./pages/ResetPassword";
 import Landing from "./pages/Landing";
 import Settings from "./pages/Settings";
+import TradingPlanSettings from "./pages/TradingPlanSettings";
+import AnalyticsDashboard from "./pages/AnalyticsDashboard";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -38,6 +40,8 @@ const App = () => (
             <Route path="/access-pending" element={<AccessPending />} />
             <Route path="/admin-panel" element={<AdminPanel />} />
             <Route path="/reset-password" element={<ResetPassword />} />
+            <Route path="/trading-plan" element={<TradingPlanSettings />} />
+            <Route path="/analytics" element={<AnalyticsDashboard />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

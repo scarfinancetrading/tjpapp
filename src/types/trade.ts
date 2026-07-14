@@ -1,3 +1,5 @@
+import type { ComplianceData } from "./compliance";
+
 export interface Trade {
   id: string;
   fecha: string;
@@ -15,6 +17,7 @@ export interface Trade {
   imageBeforePath?: string | null;
   imageAfterPath?: string | null;
   imageSummary?: TradeImageSummary | null;
+  complianceData?: ComplianceData | null;
 }
 
 export interface TradeImageSummary {

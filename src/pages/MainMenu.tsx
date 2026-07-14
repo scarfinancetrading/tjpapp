@@ -58,6 +58,7 @@ const MainMenu = () => {
   if (!user || !hasAccess) return null;
 
   const items = [
+    { title: "Plan de Trading", description: "Define tus reglas, audita tu disciplina y analiza tu rendimiento con IA.", icon: ShieldCheck, path: "/trading-plan", iconClassName: "text-primary" },
     { title: "Journal", description: "Registra y analiza tus operaciones de trading", icon: BookOpen, path: "/journals" },
     { title: "Calculadora de Lotaje", description: "Calcula el tamaño exacto de tu posición con precios en tiempo real", icon: Calculator, path: "/calculator" },
     { title: "Calendario Noticias", description: "Eventos económicos de Forex Factory e Investing.com con filtros", icon: CalendarDays, path: "/calendar" },
