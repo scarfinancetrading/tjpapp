@@ -239,6 +239,22 @@ const TradeForm = ({ onAddTrade, accountSize }: TradeFormProps) => {
       uploadedPath = path;
     }
 
+    // Evaluate compliance without breaking submission
+    let complianceData = null;
+    try {
+      if (activePlan) {
+        complianceData = evaluateTradeCompliance(
+          {
+            par, sesion, orden, riskReward, riesgo,
+            custom_rule_overrides: customOverrides,
+          },
+          planRules
+        );
+      }
+    } catch (err) {
+      console.error("Compliance evaluation failed:", err);
+    }
+
     const trade: Trade = {
       id: crypto.randomUUID(),
       fecha: fecha ? format(fecha, "M/d/yyyy") : "",
@@ -256,6 +272,7 @@ const TradeForm = ({ onAddTrade, accountSize }: TradeFormProps) => {
       imageBeforePath: uploadedPath,
       imageAfterPath: null,
       imageSummary: imageSummary,
+      complianceData,
     };
     onAddTrade(trade);
     resetForm();
