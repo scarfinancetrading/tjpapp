@@ -50,6 +50,7 @@ export const useTrades = (journalId?: string | null) => {
         imageBeforePath: (trade as any).image_before_path ?? null,
         imageAfterPath: (trade as any).image_after_path ?? null,
         imageSummary: (trade as any).image_summary ?? null,
+        complianceData: (trade as any).compliance_data ?? null,
       }));
 
       setTrades(formattedTrades);
@@ -91,7 +92,8 @@ export const useTrades = (journalId?: string | null) => {
         image_before_path: trade.imageBeforePath ?? null,
         image_after_path: trade.imageAfterPath ?? null,
         image_summary: (trade.imageSummary ?? null) as any,
-      });
+        compliance_data: (trade.complianceData ?? null) as any,
+      } as any);
 
       if (error) throw error;
 
