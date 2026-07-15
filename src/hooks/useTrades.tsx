@@ -51,6 +51,7 @@ export const useTrades = (journalId?: string | null) => {
         imageAfterPath: (trade as any).image_after_path ?? null,
         imageSummary: (trade as any).image_summary ?? null,
         complianceData: (trade as any).compliance_data ?? null,
+        fundingAccountId: (trade as any).funding_account_id ?? null,
       }));
 
       setTrades(formattedTrades);
