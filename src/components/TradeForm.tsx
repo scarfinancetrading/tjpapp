@@ -310,6 +310,32 @@ const TradeForm = ({ onAddTrade, accountSize }: TradeFormProps) => {
         Nueva Operación
       </h2>
 
+      {/* Funding account selector */}
+      {planRules.funding_accounts && planRules.funding_accounts.length > 0 && (
+        <div className="space-y-2">
+          <Label className="text-muted-foreground text-sm">Cuenta de Fondeo</Label>
+          <Select
+            value={fundingAccountId}
+            onValueChange={(v) => {
+              setFundingAccountId(v);
+              try { localStorage.setItem(LAST_ACCOUNT_KEY, v); } catch { /* ignore */ }
+            }}
+          >
+            <SelectTrigger className="bg-secondary border-border">
+              <SelectValue placeholder="Seleccionar cuenta" />
+            </SelectTrigger>
+            <SelectContent className="bg-popover border-border">
+              {planRules.funding_accounts.map((a) => (
+                <SelectItem key={a.id} value={a.id}>
+                  {a.company_name} · ${a.account_size.toLocaleString()} · {a.phase}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      )}
+
+
       {/* Optional MT5 image upload (Antes) */}
       <div className="rounded-lg border border-dashed border-primary/40 bg-primary/5 p-4 space-y-3">
         <div className="flex items-start justify-between gap-3 flex-wrap">
