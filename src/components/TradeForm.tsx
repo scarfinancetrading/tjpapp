@@ -113,6 +113,22 @@ const TradeForm = ({ onAddTrade, accountSize }: TradeFormProps) => {
       localStorage.removeItem(STORAGE_KEY);
     }
   }, [fecha, par, sesion, estrategia, entrada, orden, riskReward, riesgo, stopLoss, lotaje, resultado, salidaOperacion]);
+  // Auto-select last used or first available funding account
+  useEffect(() => {
+    const accounts = planRules.funding_accounts ?? [];
+    if (accounts.length === 0) {
+      if (fundingAccountId) setFundingAccountId("");
+      return;
+    }
+    const exists = accounts.some((a) => a.id === fundingAccountId);
+    if (!exists) {
+      const stored = localStorage.getItem(LAST_ACCOUNT_KEY);
+      const fallback =
+        (stored && accounts.find((a) => a.id === stored)?.id) || accounts[0].id;
+      setFundingAccountId(fallback);
+    }
+  }, [planRules.funding_accounts, fundingAccountId]);
+
 
   const resetForm = () => {
     isResetting.current = true;
