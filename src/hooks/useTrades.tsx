@@ -94,6 +94,7 @@ export const useTrades = (journalId?: string | null) => {
         image_after_path: trade.imageAfterPath ?? null,
         image_summary: (trade.imageSummary ?? null) as any,
         compliance_data: (trade.complianceData ?? null) as any,
+        funding_account_id: trade.fundingAccountId ?? null,
       } as any);
 
       if (error) throw error;
