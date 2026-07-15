@@ -34,9 +34,13 @@ interface TradeFormProps {
 
 const TradeForm = ({ onAddTrade, accountSize }: TradeFormProps) => {
   const STORAGE_KEY = "tradeFormDraft";
+  const LAST_ACCOUNT_KEY = "lastFundingAccountId";
   const { user } = useAuth();
   const { rules: planRules, plan: activePlan } = useTradingPlan();
   const [customOverrides, setCustomOverrides] = useState<Record<string, boolean>>({});
+  const [fundingAccountId, setFundingAccountId] = useState<string>(
+    () => localStorage.getItem(LAST_ACCOUNT_KEY) ?? ""
+  );
 
   const loadDraft = () => {
     try {
@@ -109,6 +113,22 @@ const TradeForm = ({ onAddTrade, accountSize }: TradeFormProps) => {
       localStorage.removeItem(STORAGE_KEY);
     }
   }, [fecha, par, sesion, estrategia, entrada, orden, riskReward, riesgo, stopLoss, lotaje, resultado, salidaOperacion]);
+  // Auto-select last used or first available funding account
+  useEffect(() => {
+    const accounts = planRules.funding_accounts ?? [];
+    if (accounts.length === 0) {
+      if (fundingAccountId) setFundingAccountId("");
+      return;
+    }
+    const exists = accounts.some((a) => a.id === fundingAccountId);
+    if (!exists) {
+      const stored = localStorage.getItem(LAST_ACCOUNT_KEY);
+      const fallback =
+        (stored && accounts.find((a) => a.id === stored)?.id) || accounts[0].id;
+      setFundingAccountId(fallback);
+    }
+  }, [planRules.funding_accounts, fundingAccountId]);
+
 
   const resetForm = () => {
     isResetting.current = true;
@@ -274,7 +294,11 @@ const TradeForm = ({ onAddTrade, accountSize }: TradeFormProps) => {
       imageAfterPath: null,
       imageSummary: imageSummary,
       complianceData,
+      fundingAccountId: fundingAccountId || null,
     };
+    if (fundingAccountId) {
+      try { localStorage.setItem(LAST_ACCOUNT_KEY, fundingAccountId); } catch { /* ignore */ }
+    }
     onAddTrade(trade);
     resetForm();
     toast.success("Operación añadida correctamente");
@@ -285,6 +309,32 @@ const TradeForm = ({ onAddTrade, accountSize }: TradeFormProps) => {
       <h2 className="text-lg font-heading font-semibold text-foreground">
         Nueva Operación
       </h2>
+
+      {/* Funding account selector */}
+      {planRules.funding_accounts && planRules.funding_accounts.length > 0 && (
+        <div className="space-y-2">
+          <Label className="text-muted-foreground text-sm">Cuenta de Fondeo</Label>
+          <Select
+            value={fundingAccountId}
+            onValueChange={(v) => {
+              setFundingAccountId(v);
+              try { localStorage.setItem(LAST_ACCOUNT_KEY, v); } catch { /* ignore */ }
+            }}
+          >
+            <SelectTrigger className="bg-secondary border-border">
+              <SelectValue placeholder="Seleccionar cuenta" />
+            </SelectTrigger>
+            <SelectContent className="bg-popover border-border">
+              {planRules.funding_accounts.map((a) => (
+                <SelectItem key={a.id} value={a.id}>
+                  {a.company_name} · ${a.account_size.toLocaleString()} · {a.phase}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      )}
+
 
       {/* Optional MT5 image upload (Antes) */}
       <div className="rounded-lg border border-dashed border-primary/40 bg-primary/5 p-4 space-y-3">

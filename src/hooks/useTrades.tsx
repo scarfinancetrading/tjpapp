@@ -51,6 +51,7 @@ export const useTrades = (journalId?: string | null) => {
         imageAfterPath: (trade as any).image_after_path ?? null,
         imageSummary: (trade as any).image_summary ?? null,
         complianceData: (trade as any).compliance_data ?? null,
+        fundingAccountId: (trade as any).funding_account_id ?? null,
       }));
 
       setTrades(formattedTrades);
@@ -93,6 +94,7 @@ export const useTrades = (journalId?: string | null) => {
         image_after_path: trade.imageAfterPath ?? null,
         image_summary: (trade.imageSummary ?? null) as any,
         compliance_data: (trade.complianceData ?? null) as any,
+        funding_account_id: trade.fundingAccountId ?? null,
       } as any);
 
       if (error) throw error;
@@ -134,7 +136,8 @@ export const useTrades = (journalId?: string | null) => {
           image_before_path: updatedTrade.imageBeforePath ?? null,
           image_after_path: updatedTrade.imageAfterPath ?? null,
           image_summary: (updatedTrade.imageSummary ?? null) as any,
-        })
+          funding_account_id: updatedTrade.fundingAccountId ?? null,
+        } as any)
         .eq("id", updatedTrade.id);
 
       if (error) throw error;

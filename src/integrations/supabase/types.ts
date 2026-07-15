@@ -93,6 +93,7 @@ export type Database = {
           entrada: string | null
           estrategia: string | null
           fecha: string | null
+          funding_account_id: string | null
           id: string
           image_after_path: string | null
           image_before_path: string | null
@@ -116,6 +117,7 @@ export type Database = {
           entrada?: string | null
           estrategia?: string | null
           fecha?: string | null
+          funding_account_id?: string | null
           id?: string
           image_after_path?: string | null
           image_before_path?: string | null
@@ -139,6 +141,7 @@ export type Database = {
           entrada?: string | null
           estrategia?: string | null
           fecha?: string | null
+          funding_account_id?: string | null
           id?: string
           image_after_path?: string | null
           image_before_path?: string | null

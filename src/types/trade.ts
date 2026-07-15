@@ -18,6 +18,7 @@ export interface Trade {
   imageAfterPath?: string | null;
   imageSummary?: TradeImageSummary | null;
   complianceData?: ComplianceData | null;
+  fundingAccountId?: string | null;
 }
 
 export interface TradeImageSummary {

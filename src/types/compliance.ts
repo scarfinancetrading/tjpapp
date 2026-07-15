@@ -3,6 +3,18 @@ export interface CustomRule {
   name: string;
 }
 
+export type FundingPhase = "Fase 1" | "Fase 2" | "Fondeada";
+
+export interface FundingAccount {
+  id: string;
+  company_name: string;
+  account_size: number;
+  phase: FundingPhase;
+  profit_target_pct: number;
+  daily_drawdown_pct: number;
+  max_drawdown_pct: number;
+}
+
 export interface PlanRules {
   allowed_pairs: string[];
   allowed_sessions: string[];
@@ -10,6 +22,7 @@ export interface PlanRules {
   min_risk_reward: number;
   max_risk_percent: number;
   custom_rules: CustomRule[];
+  funding_accounts: FundingAccount[];
 }
 
 export interface ComplianceDetail {
@@ -29,4 +42,5 @@ export const DEFAULT_PLAN_RULES: PlanRules = {
   min_risk_reward: 0,
   max_risk_percent: 0,
   custom_rules: [],
+  funding_accounts: [],
 };
