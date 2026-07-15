@@ -294,7 +294,11 @@ const TradeForm = ({ onAddTrade, accountSize }: TradeFormProps) => {
       imageAfterPath: null,
       imageSummary: imageSummary,
       complianceData,
+      fundingAccountId: fundingAccountId || null,
     };
+    if (fundingAccountId) {
+      try { localStorage.setItem(LAST_ACCOUNT_KEY, fundingAccountId); } catch { /* ignore */ }
+    }
     onAddTrade(trade);
     resetForm();
     toast.success("Operación añadida correctamente");
