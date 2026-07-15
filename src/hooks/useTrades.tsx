@@ -136,7 +136,8 @@ export const useTrades = (journalId?: string | null) => {
           image_before_path: updatedTrade.imageBeforePath ?? null,
           image_after_path: updatedTrade.imageAfterPath ?? null,
           image_summary: (updatedTrade.imageSummary ?? null) as any,
-        })
+          funding_account_id: updatedTrade.fundingAccountId ?? null,
+        } as any)
         .eq("id", updatedTrade.id);
 
       if (error) throw error;
