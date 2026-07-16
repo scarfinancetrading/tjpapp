@@ -10,6 +10,8 @@ import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import { Trade } from "@/types/trade";
 import { toast } from "sonner";
+import { useTradingPlan } from "@/hooks/useTradingPlan";
+import { evaluateTradeCompliance } from "@/utils/complianceEngine";
 
 interface ParsedTrade {
   fecha: string;
