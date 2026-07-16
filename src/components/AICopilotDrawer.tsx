@@ -44,6 +44,7 @@ const AICopilotDrawer = ({ onAddTrade }: AICopilotDrawerProps) => {
   const [analyzing, setAnalyzing] = useState(false);
   const [saving, setSaving] = useState(false);
   const [preview, setPreview] = useState<ParsedTrade | null>(null);
+  const { rules: planRules, plan: activePlan } = useTradingPlan();
 
   const recorderRef = useRef<MediaRecorder | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
