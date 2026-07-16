@@ -29,6 +29,7 @@ import { useTradingPlan } from "@/hooks/useTradingPlan";
 interface TradeRow {
   id: string;
   created_at: string;
+  fecha: string | null;
   resultado: string | null;
   compliance_data: ComplianceData | null;
   funding_account_id: string | null;
