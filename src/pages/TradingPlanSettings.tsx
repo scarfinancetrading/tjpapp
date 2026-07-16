@@ -34,6 +34,7 @@ import {
 } from "@/types/compliance";
 import { toast } from "sonner";
 import TagInput from "@/components/TagInput";
+import { supabase } from "@/integrations/supabase/client";
 
 const SESSION_OPTIONS = ["Londres", "New York", "Asia"];
 const ORDER_TYPE_OPTIONS = [
