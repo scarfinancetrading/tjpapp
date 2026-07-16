@@ -95,15 +95,15 @@ const AnalyticsDashboard = () => {
   const { equityData, totalPnl, maxDrawdown, dailyPnl } = useMemo(() => {
     const base = selectedAccount?.account_size ?? 0;
     let balance = base;
-    let peak = base;
     let maxDd = 0;
     const rows: { idx: number; date: string; balance: number; total: number; disciplinado: number }[] = [];
     let cumAll = 0;
     let cumDisc = 0;
 
-    // Compute daily PnL (today)
+    // Compute daily PnL for today, matching by trade fecha ("M/d/yyyy") or created_at
     const today = new Date();
     const todayKey = today.toDateString();
+    const todayMDY = `${today.getMonth() + 1}/${today.getDate()}/${today.getFullYear()}`;
     let daily = 0;
 
     filteredTrades.forEach((t, i) => {
@@ -112,10 +112,14 @@ const AnalyticsDashboard = () => {
       cumAll += pnl;
       const score = t.compliance_data?.score ?? 0;
       if (score >= 80) cumDisc += pnl;
-      if (balance > peak) peak = balance;
-      const dd = peak - balance;
+      // Max Overall Drawdown: only counts once balance dips below initial account size
+      const dd = Math.max(0, base - balance);
       if (dd > maxDd) maxDd = dd;
-      if (new Date(t.created_at).toDateString() === todayKey) daily += pnl;
+
+      const fechaMatches = t.fecha && t.fecha.trim() === todayMDY;
+      const createdMatches = new Date(t.created_at).toDateString() === todayKey;
+      if (fechaMatches || createdMatches) daily += pnl;
+
       rows.push({
         idx: i + 1,
         date: new Date(t.created_at).toLocaleDateString("es-ES", {
