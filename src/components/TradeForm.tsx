@@ -322,6 +322,10 @@ const TradeForm = ({ onAddTrade, accountSize }: TradeFormProps) => {
             onValueChange={(v) => {
               setFundingAccountId(v);
               try { localStorage.setItem(LAST_ACCOUNT_KEY, v); } catch { /* ignore */ }
+              const acc = planRules.funding_accounts?.find((a) => a.id === v);
+              if (acc?.journal_id && acc.journal_id !== currentJournalId) {
+                navigate(`/journal/${acc.journal_id}`);
+              }
             }}
           >
             <SelectTrigger className="bg-secondary border-border">
