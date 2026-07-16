@@ -208,6 +208,28 @@ const AICopilotDrawer = ({ onAddTrade }: AICopilotDrawerProps) => {
     if (!preview) return;
     setSaving(true);
     try {
+      const fundingAccountId =
+        (typeof window !== "undefined" && localStorage.getItem("lastFundingAccountId")) || null;
+
+      let complianceData = null;
+      try {
+        if (activePlan) {
+          complianceData = evaluateTradeCompliance(
+            {
+              par: preview.par,
+              sesion: preview.sesion,
+              orden: preview.orden,
+              riskReward: preview.riskReward,
+              riesgo: preview.riesgo,
+              custom_rule_overrides: {},
+            },
+            planRules
+          );
+        }
+      } catch (err) {
+        console.error("Compliance evaluation failed:", err);
+      }
+
       await onAddTrade({
         id: "",
         fecha: preview.fecha,
@@ -222,6 +244,8 @@ const AICopilotDrawer = ({ onAddTrade }: AICopilotDrawerProps) => {
         lotaje: preview.lotaje,
         resultado: preview.resultado,
         salidaOperacion: preview.salidaOperacion,
+        complianceData,
+        fundingAccountId,
       });
       toast.success("¡Operación añadida con éxito!");
       setPreview(null);
