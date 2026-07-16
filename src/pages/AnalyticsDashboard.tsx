@@ -68,7 +68,7 @@ const AnalyticsDashboard = () => {
         };
       })
         .from("trades")
-        .select("id,created_at,resultado,compliance_data,funding_account_id")
+        .select("id,created_at,fecha,resultado,compliance_data,funding_account_id")
         .order("created_at", { ascending: true });
       if (!error && data) setTrades(data);
       setLoading(false);
