@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { format, isValid, parseISO } from "date-fns";
 import { es } from "date-fns/locale";
 import { CalendarIcon, Upload, Sparkles, X, Loader2 } from "lucide-react";
@@ -37,6 +38,8 @@ const TradeForm = ({ onAddTrade, accountSize }: TradeFormProps) => {
   const LAST_ACCOUNT_KEY = "lastFundingAccountId";
   const { user } = useAuth();
   const { rules: planRules, plan: activePlan } = useTradingPlan();
+  const navigate = useNavigate();
+  const { journalId: currentJournalId } = useParams<{ journalId: string }>();
   const [customOverrides, setCustomOverrides] = useState<Record<string, boolean>>({});
   const [fundingAccountId, setFundingAccountId] = useState<string>(
     () => localStorage.getItem(LAST_ACCOUNT_KEY) ?? ""
@@ -319,6 +322,10 @@ const TradeForm = ({ onAddTrade, accountSize }: TradeFormProps) => {
             onValueChange={(v) => {
               setFundingAccountId(v);
               try { localStorage.setItem(LAST_ACCOUNT_KEY, v); } catch { /* ignore */ }
+              const acc = planRules.funding_accounts?.find((a) => a.id === v);
+              if (acc?.journal_id && acc.journal_id !== currentJournalId) {
+                navigate(`/journal/${acc.journal_id}`);
+              }
             }}
           >
             <SelectTrigger className="bg-secondary border-border">

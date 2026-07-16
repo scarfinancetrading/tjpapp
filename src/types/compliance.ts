@@ -13,6 +13,7 @@ export interface FundingAccount {
   profit_target_pct: number;
   daily_drawdown_pct: number;
   max_drawdown_pct: number;
+  journal_id?: string | null;
 }
 
 export interface PlanRules {

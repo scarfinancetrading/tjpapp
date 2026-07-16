@@ -10,6 +10,8 @@ import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import { Trade } from "@/types/trade";
 import { toast } from "sonner";
+import { useTradingPlan } from "@/hooks/useTradingPlan";
+import { evaluateTradeCompliance } from "@/utils/complianceEngine";
 
 interface ParsedTrade {
   fecha: string;
@@ -42,6 +44,7 @@ const AICopilotDrawer = ({ onAddTrade }: AICopilotDrawerProps) => {
   const [analyzing, setAnalyzing] = useState(false);
   const [saving, setSaving] = useState(false);
   const [preview, setPreview] = useState<ParsedTrade | null>(null);
+  const { rules: planRules, plan: activePlan } = useTradingPlan();
 
   const recorderRef = useRef<MediaRecorder | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
@@ -205,6 +208,28 @@ const AICopilotDrawer = ({ onAddTrade }: AICopilotDrawerProps) => {
     if (!preview) return;
     setSaving(true);
     try {
+      const fundingAccountId =
+        (typeof window !== "undefined" && localStorage.getItem("lastFundingAccountId")) || null;
+
+      let complianceData = null;
+      try {
+        if (activePlan) {
+          complianceData = evaluateTradeCompliance(
+            {
+              par: preview.par,
+              sesion: preview.sesion,
+              orden: preview.orden,
+              riskReward: preview.riskReward,
+              riesgo: preview.riesgo,
+              custom_rule_overrides: {},
+            },
+            planRules
+          );
+        }
+      } catch (err) {
+        console.error("Compliance evaluation failed:", err);
+      }
+
       await onAddTrade({
         id: "",
         fecha: preview.fecha,
@@ -219,6 +244,8 @@ const AICopilotDrawer = ({ onAddTrade }: AICopilotDrawerProps) => {
         lotaje: preview.lotaje,
         resultado: preview.resultado,
         salidaOperacion: preview.salidaOperacion,
+        complianceData,
+        fundingAccountId,
       });
       toast.success("¡Operación añadida con éxito!");
       setPreview(null);
