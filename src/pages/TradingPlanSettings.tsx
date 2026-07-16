@@ -102,7 +102,7 @@ const TradingPlanSettings = () => {
     setForm((f) => ({ ...f, custom_rules: f.custom_rules.filter((r) => r.id !== id) }));
   };
 
-  const saveAccount = () => {
+  const saveAccount = async () => {
     if (!editingAccount) return;
     if (!editingAccount.company_name.trim()) {
       toast.error("Ingresa el nombre de la empresa");
@@ -112,15 +112,36 @@ const TradingPlanSettings = () => {
       toast.error("Tamaño de cuenta inválido");
       return;
     }
-    setForm((f) => {
-      const exists = f.funding_accounts.some((a) => a.id === editingAccount.id);
-      return {
-        ...f,
-        funding_accounts: exists
-          ? f.funding_accounts.map((a) => (a.id === editingAccount.id ? editingAccount : a))
-          : [...f.funding_accounts, editingAccount],
-      };
-    });
+    const exists = form.funding_accounts.some((a) => a.id === editingAccount.id);
+    let accountToSave = editingAccount;
+
+    // Auto-create a Journal for new funding accounts so trades are isolated per account
+    if (!exists && user && !editingAccount.journal_id) {
+      const journalName = `${editingAccount.company_name} · ${editingAccount.phase}`;
+      const { data: journalRow, error: journalErr } = await (supabase as any)
+        .from("journals")
+        .insert({
+          user_id: user.id,
+          name: journalName,
+          account_size: editingAccount.account_size,
+          commission_per_lot: 0,
+        })
+        .select("id")
+        .single();
+      if (journalErr) {
+        toast.error("No se pudo crear el journal asociado");
+      } else if (journalRow?.id) {
+        accountToSave = { ...editingAccount, journal_id: journalRow.id };
+        toast.success(`Journal "${journalName}" creado`);
+      }
+    }
+
+    setForm((f) => ({
+      ...f,
+      funding_accounts: exists
+        ? f.funding_accounts.map((a) => (a.id === accountToSave.id ? accountToSave : a))
+        : [...f.funding_accounts, accountToSave],
+    }));
     setEditingAccount(null);
   };
 
