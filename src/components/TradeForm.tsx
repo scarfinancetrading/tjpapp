@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { format, isValid, parseISO } from "date-fns";
 import { es } from "date-fns/locale";
 import { CalendarIcon, Upload, Sparkles, X, Loader2 } from "lucide-react";
